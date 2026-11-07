@@ -4,7 +4,7 @@
 ## Install MyantlrLsp
 In the folder you want to install the LSP (ex: ~/Documents/Lsp/MiniAntlrLsp/)
 
-git clone git@github.com:VociNur/MiniAntlr4Lsp.git
+git clone https://github.com/VociNur/MiniAntlr4Lsp.git
 make install
 Then add this lsp to your IDE.
 
@@ -21,7 +21,6 @@ scope = "source.antlr4"
 file-types = ["g4"]
 comment-tokens = ["//"]
 
-# language-servers = ["efm"]
 block-comment-tokens = { start = "/*", end = "*/" }
 indent = { tab-width = 4, unit = "    " }
 roots = []
