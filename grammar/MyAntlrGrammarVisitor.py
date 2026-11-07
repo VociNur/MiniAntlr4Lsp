@@ -54,6 +54,11 @@ class MyAntlrGrammarVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MyAntlrGrammarParser#fragmentDecl.
+    def visitFragmentDecl(self, ctx:MyAntlrGrammarParser.FragmentDeclContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by MyAntlrGrammarParser#branchListBase.
     def visitBranchListBase(self, ctx:MyAntlrGrammarParser.BranchListBaseContext):
         return self.visitChildren(ctx)

@@ -8,9 +8,9 @@ dependencies = [
 ]
 
 [tool.basedpyright]
+ignore = ["**/node_modules", "**/__pycache__", ".venv", "**/MyAntlrGrammar*.py"]
 extraPaths = ["grammar", "checking", "errors"]
 typeCheckingMode = "standard"
-exclude = ["outdated"]
 reportMissingModuleSource = false
 reportWildcardImportFromLibrary = false
 reportImplicitOverride = false
@@ -27,3 +27,9 @@ reportOptionalOperand = false
 
 [tool.ruff.lint]
 extend-ignore = ["N999"]
+extend-exclude = [
+    "**/MyAntlrGrammar*.py",   # code généré par ANTLR
+    ".venv",
+    "site-packages",
+]
+force-exclude = true

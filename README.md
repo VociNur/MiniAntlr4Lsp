@@ -1,5 +1,15 @@
 # MiniAntlr4Lsp
 
+This lsp should detects:
+- bad grammar name
+- uninit variables
+- empty branches
+
+Action for uninit variable:
+- Lsp gives you one correction you can do.
+- If your variable is well known, it can create it with default bindings.
+
+For empty branches, it’s preferable to use ? instead.
 
 ## Install MyantlrLsp
 In the folder you want to install the LSP (ex: ~/Documents/Lsp/MiniAntlrLsp/)

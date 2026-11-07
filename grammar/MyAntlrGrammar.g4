@@ -11,8 +11,7 @@ my_options
     ;
 
 my_tokens
-    : TOKENS WHATEVER_IN_BRACE #tokensDecl
-    
+    : TOKENS WHATEVER_IN_BRACE #tokensDecl   
     ;
 
 code_header
@@ -25,10 +24,13 @@ code_members
 
 my_rules: (my_rule)* #myRuleList;
 
-my_rule: ID COL branch_l SCOL #ruleDecl;
+my_rule
+    : ID COL branch_l SCOL #ruleDecl
+    | FRAGMENT ID COL branch_l SCOL #fragmentDecl
+    ;
 
 branch_l
-    : branch_l #branchListBase
+    : branch #branchListBase
     | branch PIPE branch_l #branchList
     ;
 
@@ -69,8 +71,8 @@ expr
 value_modif: value modif? #valueModif;
 
 modif
-    :QUESTION_MARK
-    |STAR
+    : QUESTION_MARK
+    | STAR
     ;
 
 //un jour il faudra séparer les règles pour lexer et parser je pense ?
@@ -129,10 +131,15 @@ TILDE: '~';
 MINUS: '-';
 DOT: '.';
 EQUAL: '=';
+FRAGMENT: 'fragment';
 
-
+// this was wrong
+// CHARSET
+//     : '[' [ "a-zA-Z0-9_'\-\\.]* ']'
+//     ;
+//tout sauf [ ] et \\ sauf si [ ou ] est précédé par \
 CHARSET
-    : '[' [ "a-zA-Z0-9_'\-\\.]* ']'
+        : '[' ('\\' . | ~[\]\\])* ']'
     ;
 
 ID
@@ -140,7 +147,6 @@ ID
     ;
     
 COMMENT
-// # is a comment in Mini-C, and used for #include in real C so that we ignore #include statements
     : '//' ~[\r\n]* -> skip
     ;
 
@@ -151,8 +157,14 @@ SPACE
  ;
 
 WHATEVER_IN_BRACE
-    : '{' .*? '}'
+    : '{' NESTED_BRACED_CONTENT* '}'
     ;
+
+fragment NESTED_BRACED_CONTENT
+    : '{' NESTED_BRACED_CONTENT* '}'
+    | ~[{}]
+    ;
+    
 
 // WHATEVER_IN_SG_QUOTE
 //     : '\'' .*? '\''

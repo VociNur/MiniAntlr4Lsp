@@ -1,6 +1,7 @@
 #pyright: basic
 # pyright: reportArgumentType=false, reportOptionalMemberAccess=false, reportAttributeAccessIssue=false, reportOptionalIterable=false, reportGeneralTypeIssues=false,reportWildcardImportFromLibrary=false
 from antlr4 import *
+from lsprotocol import types as lsp
 from MyAntlrErrors import MyAntlrErrorTyping
 from MyAntlrGrammarParser import *
 from MyAntlrGrammarVisitor import (
@@ -29,7 +30,12 @@ class MyAntlrTyping(MyAntlrGrammarVisitor):
         self.errors = []
         self.warnings = []
         self.filename = filename
+        self.to_print = ""
+        self.lexer_position_start : lsp.Position = None
 
+    def __mprint__(self, msg):
+        self.to_print += str(msg) + "\n"
+    
     def get_name_typing_rules(self)->list[str]:
         return list(self.defined_rules.keys())
 
@@ -144,8 +150,17 @@ class MyAntlrTyping(MyAntlrGrammarVisitor):
     def visitRuleDecl(self, ctx:MyAntlrGrammarParser.RuleDeclContext):
         # self.defined_rules.append(ctx.ID().symbol)
         self._define_rule(ctx.ID())
+        if ctx.ID().symbol.text[0].islower() and self.lexer_position_start is not None:
+            pass
+            # diagnose TODO
+            
+        if ctx.ID().symbol.text[0].isupper() and self.lexer_position_start is None:
+                self.lexer_position_start = lsp.Position(ctx.start.line-1, 0)# lsp et antlr ne parlent pas pareil.
         self.visit(ctx.branch_l())
 
+    def visitFragmentDecl(self, ctx:MyAntlrGrammarParser.FragmentDeclContext):
+        self._define_rule(ctx.ID())
+        self.visit(ctx.branch_l())
 
     # Visit a parse tree produced by MyAntlrGrammarParser#branchListBase.
     def visitBranchListBase(self, ctx:MyAntlrGrammarParser.BranchListBaseContext):

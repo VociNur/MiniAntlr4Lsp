@@ -109,7 +109,12 @@ class Analyzer:
 
         typing_visitor = MyAntlrTyping(stem_from_uri(uri))
         try:
+
             typing_visitor.visit(tree)
+            # debug
+            if typing_visitor.to_print:
+                 self.diags.append(make_diag(0, 0, 1, typing_visitor.to_print))
+            
             for used_rule in typing_visitor.used_rules:
                 token = used_rule.token
                 if token.text not in typing_visitor.defined_rules and token.text not in default_vars.already_init_variable:
@@ -136,30 +141,30 @@ class Analyzer:
                     self.actions.append(action)
 
                     # trouver la variable la plus proche à définir par les defaults
+                    key = token.text
 
-                    best, score, _ = process.extractOne(
-                        token.text, default_vars.can_be_initialized
-                    )
-                    # on pourra gérer le score un peu plus tard
-                    # see on
-                    # https://pygls.readthedocs.io/en/latest/servers/examples/code-actions.html
-                     
-                    text_edit = lsp.TextEdit(
-                        range=diag.range, new_text=best
-                    )
-                    action = lsp.CodeAction(
-                        title=f"Replace with {best} with score: {score}",
-                        kind=lsp.CodeActionKind.QuickFix,
-                        diagnostics=[diag],
-                        edit=lsp.WorkspaceEdit(changes={uri: [text_edit]}),
-                    )
-                    self.actions.append(action)
+                    if key in default_vars.can_be_initialized:
+                        value = default_vars.can_be_initialized[key]
+                        # on pourra gérer le score un peu plus tard
+                        # see on
+                        # https://pygls.readthedocs.io/en/latest/servers/examples/code-actions.html
+                        #
+                        #    
+                        range = lsp.Range(typing_visitor.lexer_position_start, typing_visitor.lexer_position_start) if typing_visitor.lexer_position_start is not None else lsp.Range(lsp.Position(0, 0), lsp.Position(0, 0))
+                        text_edit = lsp.TextEdit(
+                            range=range, new_text=f"{key}:\'{value}\';\n"
+                        )
+                        action = lsp.CodeAction(
+                            title=f"Add default {key} with bind {value}",
+                            kind=lsp.CodeActionKind.QuickFix,
+                            diagnostics=[diag],
+                            edit=lsp.WorkspaceEdit(changes={uri: [text_edit]}),
+                            is_preferred=True,
+                        )
+                        self.actions.insert(0, action)
 
 
         
-            # msg= str(typing_visitor.defined_rules.keys()) + "\n\n\n" + str(typing_visitor.defined_tags.keys())  + "\n\n\n" + str(typing_visitor.used_rules) 
-            # msg = str(len(self.actions))
-            # self.diags.append(make_safe_diag(0, 0, 1, msg))
 
 
 
@@ -219,8 +224,6 @@ def code_actions(ls: LanguageServer, params: lsp.CodeActionParams) -> list[lsp.C
     actions = []
     mouse_range = params.range
     for a in analyzer.actions:
-        # msg = "auie" + str(mouse_range) + "///" + str(a.diagnostics[0]) + "///" + str(a.diagnostics[0].range)
-        # log.info(msg)
         if intersection(mouse_range, a.diagnostics[0].range):
             actions.append(a)
         
