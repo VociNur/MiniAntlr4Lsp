@@ -5,7 +5,7 @@ This lsp should detects:
 - uninit variables
 - empty branches
 
-Action for uninit variable:
+Actions for uninit variable:
 - Lsp gives you one correction you can do.
 - If your variable is well known, it can create it with default bindings.
 
