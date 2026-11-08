@@ -13,9 +13,10 @@ For empty branches, it’s preferable to use ? instead.
 
 ## Install MyantlrLsp
 In the folder you want to install the LSP (ex: ~/Documents/Lsp/MiniAntlrLsp/)
-
-git clone git@github.com:VociNur/MiniAntlr4Lsp.git
+```
+git clone https://github.com/VociNur/MiniAntlr4Lsp.git
 make install
+```
 Then add this lsp to your IDE.
 
 ### Add lsp to Helix IDE.
