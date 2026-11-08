@@ -17,7 +17,8 @@ In the folder you want to install the LSP (ex: ~/Documents/Lsp/MiniAntlrLsp/)
 git clone https://github.com/VociNur/MiniAntlr4Lsp.git
 make install
 ```
-Then add this lsp to your IDE.
+You can now communicate with lsp by executing ```myantlr-lsp``` in any terminal.
+Thus you only have to add this lsp to your IDE.
 
 ### Add lsp to Helix IDE.
 Edit your ~/.config/helix/languages.toml in adding
